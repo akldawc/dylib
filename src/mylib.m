@@ -1,4 +1,5 @@
 #import "mylib.h"
+#import <stddef.h> // 引入NULL的定义头文件
 
 // 模拟卡密验证：非空且长度>6即成功
 int testKeyVerify(char *key) {
