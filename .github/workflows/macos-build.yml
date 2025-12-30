@@ -1,5 +1,15 @@
-- name: Upload iOS .dylib artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: iOS-KeyVerify-Dylib
-    path: ${{ github.workspace }}/build/lib/libiOSKeyVerifyDylib.dylib
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Configure CMake
+        run: cmake -B build -S .
+      - name: Build dylib
+        run: cmake --build build
+      - name: Upload iOS .dylib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-KeyVerify-Dylib
+          path: ${{ github.workspace }}/build/lib/libiOSKeyVerifyDylib.dylib
