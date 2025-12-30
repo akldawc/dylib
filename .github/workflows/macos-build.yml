@@ -10,8 +10,8 @@ jobs:
         run: cmake -B build -S .
       - name: Build dylib
         run: cmake --build build
-      - name: Upload dylib artifact
+      - name: Upload dylib
         uses: actions/upload-artifact@v4
         with:
-          name: KeyVerify-Dylib
-          path: ${{ github.workspace }}/build/lib/* # 匹配build/lib下的所有产物
+          name: iOS-KeyVerify-Dylib
+          path: build/lib/*.dylib # 匹配所有dylib产物
