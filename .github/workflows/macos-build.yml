@@ -1,22 +1,12 @@
-name: Build dylib on macOS
-
-# 触发条件
-on:
-  push:
-    branches:
-      - main  # 每次 push 到 main 分支时触发
-
 jobs:
   build:
-    runs-on: macos-latest  # 使用 GitHub 提供的 macOS 最新环境
+    runs-on: macos-latest
 
     steps:
-      # 步骤 3.1: 拉取仓库代码
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # 步骤 3.2: 编译生成 .dylib
-      - name: Build dylib
-        run: |
-          clang -dynamiclib -o libmylibrary.dylib mylibrary.c
-          ls -lh libmylibrary.dylib
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: "14.3" # Specify desired Xcode version
