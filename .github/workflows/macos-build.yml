@@ -1,14 +1,30 @@
+name: Build iOS KeyVerify Dylib
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: macos-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Configure CMake
-        run: cmake -B build -S .
-      - name: Build dylib
-        run: cmake --build build
-      - name: Upload iOS .dylib artifact
+
+      - name: Configure CMake for iOS
+        run: |
+          cmake -B build -S . \
+            -DCMAKE_SYSTEM_NAME=iOS \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_IOS_DEPLOYMENT_TARGET=14.0
+
+      - name: Build the dylib
+        run: cmake --build build --config Release
+
+      - name: Upload iOS dylib artifact
         uses: actions/upload-artifact@v4
         with:
           name: iOS-KeyVerify-Dylib
