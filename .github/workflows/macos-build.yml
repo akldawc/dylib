@@ -13,10 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2  # 拉取仓库代码
 
-      - name: Install Xcode Command Line Tools
-        run: |
-          sudo xcode-select --install  # 安装 Xcode 命令行工具（通常 macOS 环境已预安装，但加个步骤确保）
-      
       - name: Build dylib
         run: |
           clang -dynamiclib -o libmylibrary.dylib mylibrary.c  # 使用 clang 编译 C 代码生成 dylib 文件
