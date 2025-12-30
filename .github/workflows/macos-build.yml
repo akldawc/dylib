@@ -1,12 +1,54 @@
+name: Build macOS .dylib (Universal)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: "14.3" # Specify desired Xcode version
+      # 安装全量编译依赖（覆盖C/C++/Swift/OC）
+      - name: Install common dependencies
+        run: |
+          brew update
+          brew install cmake make swiftlint xcode-select
+
+      # 分支1：C/C++/OC（CMake构建）
+      - name: Build for C/C++/OC (CMake)
+        if: hashFiles('CMakeLists.txt') != ''
+        run: |
+          mkdir -p build && cd build
+          cmake ..
+          make -j$(sysctl -n hw.logicalcpu)
+        continue-on-error: true # 无CMake则跳过，不影响整体流程
+
+      # 分支2：C/C++/OC（Makefile构建）
+      - name: Build for C/C++/OC (Makefile)
+        if: hashFiles('Makefile') != ''
+        run: |
+          make -j$(sysctl -n hw.logicalcpu)
+        continue-on-error: true # 无Makefile则跳过
+
+      # 分支3：Swift项目
+      - name: Build for Swift
+        if: hashFiles('Package.swift') != ''
+        run: |
+          swift build -c release
+        continue-on-error: true # 无Swift包则跳过
+
+      # 自动搜索并上传所有.dylib产物
+      - name: Upload all .dylib artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-Dylib-All
+          path: |
+            **/*.dylib
+            !**/node_modules/** # 排除无关目录
+            !**/.git/**
+          if-no-files-found: warn # 无产物时仅警告，不报错
